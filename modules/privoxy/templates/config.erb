@@ -1,0 +1,100 @@
+confdir /etc/privoxy
+logdir /var/log/privoxy
+logfile privoxy_access.log
+
+filterfile default.filter
+actionsfile match-all.action # Actions that are applied to all sites and maybe overruled later on.
+actionsfile default.action   # Main actions file
+
+listen-address  0.0.0.0:8118
+toggle  1
+enable-remote-toggle  1
+enable-remote-http-toggle  0
+enable-edit-actions 1
+enforce-blocks 0
+buffer-limit 4096
+forwarded-connect-retries  1
+accept-intercepted-requests 0
+allow-cgi-request-crunching 0
+split-large-forms 0
+keep-alive-timeout 300
+tolerate-pipelining 1
+socket-timeout 300
+debug     1 # Log the destination for each request Privoxy let through. See also debug 1024.
+debug  1024 # Actions that are applied to all sites and maybe overruled later on.
+debug  4096 # Startup banner and warnings
+debug  8192 # Non-fatal errors
+
+forward-socks5 / 127.0.0.1:1080 .
+#  5.1. forward
+#  =============
+#      Everything goes to an example parent proxy, except SSL on port
+#      443 (which it doesn't handle):
+#        forward   /      parent-proxy.example.org:8080
+#        forward   :443   .
+#      Everything goes to our example ISP's caching proxy, except for
+#      requests to that ISP's sites:
+#        forward   /                  caching-proxy.isp.example.net:8000
+#        forward   .isp.example.net   .
+#      Parent proxy specified by an IPv6 address:
+#        forward   /                   [2001:DB8::1]:8000
+#      Suppose your parent proxy doesn't support IPv6:
+#        forward  /                        parent-proxy.example.org:8000
+#        forward  ipv6-server.example.org  .
+#        forward  <[2-3][0-9a-f][0-9a-f][0-9a-f]:*>   .
+#
+#  5.2. forward-socks4, forward-socks4a, forward-socks5 and forward-socks5t
+#  =========================================================================
+#
+#  Type of value:
+#
+#      target_pattern socks_proxy[:port] http_parent[:port]
+#
+#  Examples:
+#
+#      From the company example.com, direct connections are made to
+#      all "internal" domains, but everything outbound goes through
+#      their ISP's proxy by way of example.com's corporate SOCKS 4A
+#      gateway to the Internet.
+#
+#        forward-socks4a   /              socks-gw.example.com:1080  www-cache.isp.example.net:8080
+#        forward           .example.com   .
+#
+#      A rule that uses a SOCKS 4 gateway for all destinations but no
+#      HTTP parent looks like this:
+#
+#        forward-socks4   /               socks-gw.example.com:1080  .
+#
+#      To chain Privoxy and Tor, both running on the same system, you
+#      would use something like:
+#
+#        forward-socks5t   /               127.0.0.1:9050 .
+#
+#      Note that if you got Tor through one of the bundles, you may
+#      have to change the port from 9050 to 9150 (or even another
+#      one). For details, please check the documentation on the Tor
+#      website.
+#
+#      The public Tor network can't be used to reach your local
+#      network, if you need to access local servers you therefore
+#      might want to make some exceptions:
+#
+#        forward         192.168.*.*/     .
+#        forward            10.*.*.*/     .
+#        forward           127.*.*.*/     .
+#
+#      Unencrypted connections to systems in these address ranges
+#      will be as (un)secure as the local network is, but the
+#      alternative is that you can't reach the local network through
+#      Privoxy at all. Of course this may actually be desired and
+#      there is no reason to make these exceptions if you aren't sure
+#      you need them.
+#
+#      If you also want to be able to reach servers in your local
+#      network by using their names, you will need additional
+#      exceptions that look like this:
+#
+#       forward           localhost/     .
+#
+
+#forward-socks5t   /               127.0.0.1:1080 .
